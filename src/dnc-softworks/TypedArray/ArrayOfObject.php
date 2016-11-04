@@ -1,5 +1,5 @@
 <?php
-namespace dncsoftworks;
+namespace dncsoftworks\TypedArray;
 
 /**
  * Class ArrayOfObject
@@ -31,7 +31,6 @@ namespace dncsoftworks;
  *     // ... code ...
  * }
  *
- * @package app\components
  */
 abstract class ArrayOfObject extends \ArrayObject
 {
@@ -106,7 +105,8 @@ abstract class ArrayOfObject extends \ArrayObject
      *
      * @throws \InvalidArgumentException
      */
-    private function isValidInput($value) {
+    private function isValidInput($value) 
+    {
         if (!($value instanceof $this->className)) {
             throw new \InvalidArgumentException($this->fullClassName . ' accepts only instances of ' . $this->className);
         }
