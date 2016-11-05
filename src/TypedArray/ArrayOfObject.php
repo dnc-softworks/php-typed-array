@@ -1,4 +1,5 @@
 <?php
+
 namespace dncsoftworks\TypedArray;
 
 /**
@@ -32,39 +33,31 @@ namespace dncsoftworks\TypedArray;
  * }
  *
  */
-abstract class ArrayOfObject extends \ArrayObject
+abstract class ArrayOfObject extends AbstractTypedArray
 {
     /**
      * @var string The target class name
      */
     private $targetClassName;
 
-    /**
-     * @var string The current full class name
-     */
-    private $fullClassName;
-
     /** @inheritdoc */
     public function __construct($input = array(), $flags = 0, $iterator_class = "ArrayIterator")
     {
         $this->validateClassName();
 
-        $this->isValidArray($input);
-
         parent::__construct($input, $flags, $iterator_class);
     }
 
-    private function isValidArray($input)
+    /** @inheritdoc */
+    protected function isValidInput($value)
     {
-        if (is_array($input)) {
-            foreach ($input as $value) {
-                $this->isValidInput($value);
-            }
-        } else {
-            throw new \InvalidArgumentException(
-                $this->fullClassName . ' accepts only arrays of instances of ' . $this->targetClassName
-            );
-        }
+        return $value instanceof $this->targetClassName;
+    }
+
+    /** @inheritdoc */
+    protected function getTypeName()
+    {
+        return $this->targetClassName;
     }
 
     /**
@@ -72,7 +65,7 @@ abstract class ArrayOfObject extends \ArrayObject
      */
     private function validateClassName()
     {
-        $this->fullClassName = $fullClassName = get_class($this);
+        $fullClassName = $this->fullClassName;
 
         $isVariableValidClassName = $isReturnValidClassName = false;
 
@@ -102,22 +95,6 @@ abstract class ArrayOfObject extends \ArrayObject
     }
 
     /**
-     * Checks if $value is an instance of the target class
-     *
-     * @param $value
-     *
-     * @throws \InvalidArgumentException
-     */
-    private function isValidInput($value)
-    {
-        if (!($value instanceof $this->targetClassName)) {
-            throw new \InvalidArgumentException(
-                $this->fullClassName . ' accepts only instances of ' . $this->targetClassName
-            );
-        }
-    }
-
-    /**
      * If the class name does not contain the target class name, this method
      * should be implemented in order to return the target class name;
      *
@@ -126,28 +103,6 @@ abstract class ArrayOfObject extends \ArrayObject
     protected function className()
     {
         return '';
-    }
-
-    /** @inheritdoc */
-    public function offsetSet($index, $newval)
-    {
-        $this->isValidInput($newval);
-        parent::offsetSet($index, $newval);
-    }
-
-    /** @inheritdoc */
-    public function append($value)
-    {
-        $this->isValidInput($value);
-        parent::append($value);
-    }
-
-    /** @inheritdoc */
-    public function exchangeArray($input)
-    {
-        $this->isValidArray($input);
-
-        return parent::exchangeArray($input);
     }
 
     /**
