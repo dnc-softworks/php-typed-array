@@ -49,13 +49,13 @@ abstract class ArrayOfObject extends AbstractTypedArray
     }
 
     /** @inheritdoc */
-    protected function isValidInput($value)
+    protected final function isValidInput($value)
     {
         return $value instanceof $this->targetClassName;
     }
 
     /** @inheritdoc */
-    protected function getTypeName()
+    protected final function getTypeName()
     {
         return $this->targetClassName;
     }
@@ -108,7 +108,7 @@ abstract class ArrayOfObject extends AbstractTypedArray
     /**
      * @return string
      */
-    public function getTargetClassName()
+    public final function getTargetClassName()
     {
         return $this->targetClassName;
     }
@@ -116,7 +116,7 @@ abstract class ArrayOfObject extends AbstractTypedArray
     /**
      * @return string
      */
-    public function getFullClassName()
+    public final function getFullClassName()
     {
         return $this->fullClassName;
     }
