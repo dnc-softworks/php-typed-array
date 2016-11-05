@@ -113,4 +113,14 @@ abstract class AbstractTypedArray extends \ArrayObject
         }
         parent::append($value);
     }
+
+    /**
+     * Determine whether the internal array is empty
+     *
+     * @return bool
+     */
+    public function isEmpty()
+    {
+        return $this->count() === 0;
+    }
 }
