@@ -1,9 +1,9 @@
 {
-    "name": "dnc-softworks/array-of-object",
+    "name": "dnc-softworks/php-typed-array",
     "description": "A set of classes used to enhance the semantics of your type hinting",
     "type": "library",
     "keywords": ["semantics", "type-hint"],
-    "homepage": "https://github.com/dnc-softworks/array-of-object",
+    "homepage": "https://github.com/dnc-softworks/php-typed-array",
     "require": {
         "php": ">=5.3.0"
     },
