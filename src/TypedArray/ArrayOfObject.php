@@ -37,7 +37,7 @@ abstract class ArrayOfObject extends \ArrayObject
     /**
      * @var string The target class name
      */
-    private $className;
+    private $targetClassName;
 
     /**
      * @var string The current full class name
@@ -62,7 +62,7 @@ abstract class ArrayOfObject extends \ArrayObject
             }
         } else {
             throw new \InvalidArgumentException(
-                $this->fullClassName . ' accepts only arrays of instances of ' . $this->className
+                $this->fullClassName . ' accepts only arrays of instances of ' . $this->targetClassName
             );
         }
     }
@@ -74,26 +74,29 @@ abstract class ArrayOfObject extends \ArrayObject
     {
         $this->fullClassName = $fullClassName = get_class($this);
 
+        $isVariableValidClassName = $isReturnValidClassName = false;
+
         if (strpos($fullClassName, '\\') !== false) {
-            $fullClassName = substr($fullClassName, (int)strrpos($fullClassName, '\\') + 1);
+            $fullClassName = substr($fullClassName, (int) strrpos($fullClassName, '\\') + 1);
         }
 
+        $className = '';
 
         if (strpos($fullClassName, 'ArrayOf') !== 0) {
-            throw new \InvalidArgumentException('Class name must begin with "ArrayOf"');
+            $className                = str_replace('ArrayOf', '', $this->fullClassName);
+            $isVariableValidClassName = class_exists($className);
         }
 
-        $className = str_replace('ArrayOf', '', $this->fullClassName);
-
-        $isVariableValidClassName = class_exists($className);
-        $isReturnValidClassName = class_exists((string)$this->className());
+        $isReturnValidClassName = class_exists((string) $this->className());
 
         if ($isVariableValidClassName) {
-            $this->className = $className;
+            $this->targetClassName = $className;
         } elseif ($isReturnValidClassName) {
-            $this->className = $this->className();
+            $this->targetClassName = $this->className();
         } else {
-            throw new \InvalidArgumentException('Class name must mention a valid class or className() must return a valid class name');
+            throw new \InvalidArgumentException(
+                'Class name must mention a valid class or className() must return a valid class name'
+            );
         }
 
     }
@@ -105,10 +108,12 @@ abstract class ArrayOfObject extends \ArrayObject
      *
      * @throws \InvalidArgumentException
      */
-    private function isValidInput($value) 
+    private function isValidInput($value)
     {
-        if (!($value instanceof $this->className)) {
-            throw new \InvalidArgumentException($this->fullClassName . ' accepts only instances of ' . $this->className);
+        if (!($value instanceof $this->targetClassName)) {
+            throw new \InvalidArgumentException(
+                $this->fullClassName . ' accepts only instances of ' . $this->targetClassName
+            );
         }
     }
 
@@ -124,7 +129,8 @@ abstract class ArrayOfObject extends \ArrayObject
     }
 
     /** @inheritdoc */
-    public function offsetSet($index, $newval) {
+    public function offsetSet($index, $newval)
+    {
         $this->isValidInput($newval);
         parent::offsetSet($index, $newval);
     }
@@ -136,11 +142,27 @@ abstract class ArrayOfObject extends \ArrayObject
         parent::append($value);
     }
 
+    /** @inheritdoc */
     public function exchangeArray($input)
     {
         $this->isValidArray($input);
+
         return parent::exchangeArray($input);
     }
 
+    /**
+     * @return string
+     */
+    public function getTargetClassName()
+    {
+        return $this->targetClassName;
+    }
 
+    /**
+     * @return string
+     */
+    public function getFullClassName()
+    {
+        return $this->fullClassName;
+    }
 }
